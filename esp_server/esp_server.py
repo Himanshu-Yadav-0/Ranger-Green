@@ -40,7 +40,7 @@ def receive_sensor_data():
         return jsonify({"error": str(e)}) , 500
     
     # API TO GET LATEST SENSOR DATA
-@app.route('/semsor_data',methods=['GET'])
+@app.route('/sensor_data',methods=['GET'])
 def get_sensor_data():
     return jsonify(latest_sensor_data or{
         "soil_moistue":None,"temperature":None,
