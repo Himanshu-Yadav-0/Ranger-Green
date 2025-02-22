@@ -19,4 +19,30 @@ document.addEventListener('DOMContentLoaded',()=>{
     const careSuggestion = document.getElementById('careSuggestion');
 
     let selectedPlant = "" // store plant name entered by user
+
+    //fetch the sensor data only
+    async function fetchSensorData(){
+        try{
+            const response = await fetch('http://192.168.0.52:5002/fetch_sensor_data')
+            if (!response.ok) throw new Error('Network response was not ok')
+            const data = await response.json()
+            
+            //updating ui, current readings
+            currentMoisture.textContent = data.soil_moisture ? `${data.soil_moisture}%` : "No Data";
+            currentTemp.textContent = data.temperature ? `${data.temperature}°C` : "No Data";
+            currentHumidity.textContent = data.humidity ? `${data.humidity}%` : "No Data";
+            currentLight.textContent = data.light_intensity ? `${data.light_intensity} lux` : "No Data";
+            currentpumpstatus.textContent = data.pump_status ? `${data.pump_status}` : "No Data";
+
+            //for debugging
+            console.log("Updated Sensor Data:", data);
+            //update care suggestions if a plant is selected
+            if (selectedPlant) {
+                fetchPlantData();  // Fetch updated care suggestions
+            }
+        }catch(error){
+            console.log("Error fetching sensor data:",error)
+        }
+    }
+    
 })
