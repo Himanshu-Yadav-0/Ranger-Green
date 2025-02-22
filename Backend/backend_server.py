@@ -34,7 +34,17 @@ def add_plant_data():
 def home():
     return "Backend Server is Running!!",200
 
-
+#Fetch sensor data from ESP server 
+@app.rout('/fetch_sensor_data',methods=['GET'])
+def fetch_sensor_data():
+    try:
+        sensor_response = requests.get(ESP_SERVER_URL,timeout=2)
+        if sensor_response.status_code ==200:
+            return sensor_response.json(),200
+        else:
+            return jsonify({"error":"Failed to fetch sensor data"}),500
+    except Exception as e:
+        return jsonify({"error":str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
