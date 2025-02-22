@@ -23,15 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // ✅ Fetch only sensor data
     async function fetchSensorData() {
         try {
-            const response = await fetch('http://192.168.0.52:5002/fetch_sensor_data');
+            const response = await fetch('http://192.168.0.8:5001/fetch_sensor_data');
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
 
-            currentMoisture.textContent = data.soil_moisture ? `${data.soil_moisture}%` : "No Data";
-            currentTemp.textContent = data.temperature ? `${data.temperature}°C` : "No Data";
-            currentHumidity.textContent = data.humidity ? `${data.humidity}%` : "No Data";
-            currentLight.textContent = data.light_intensity ? `${data.light_intensity} lux` : "No Data";
-            currentpumpstatus.textContent = data.pump_status ? `${data.pump_status}` : "No Data";
+            currentMoisture.textContent = (data.soil_moisture !== undefined && data.soil_moisture !== null) ? `${data.soil_moisture}%` : "0%";
+currentTemp.textContent = (data.temperature !== undefined && data.temperature !== null) ? `${data.temperature}°C` : "0°C";
+currentHumidity.textContent = (data.humidity !== undefined && data.humidity !== null) ? `${data.humidity}%` : "0%";
+currentLight.textContent = (data.light_intensity !== undefined && data.light_intensity !== null) ? `${data.light_intensity} lux` : "0 lux";
+currentpumpstatus.textContent = (data.pump_status !== undefined && data.pump_status !== null) ? `${data.pump_status}` : "OFF";
+
 
             console.log("Updated Sensor Data:", data);
 
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectedPlant) return;
 
         try {
-            const response = await fetch('http://192.168.0.52:5002/compare_plant', {
+            const response = await fetch('http://192.168.0.8:5001/compare_plant', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: selectedPlant })

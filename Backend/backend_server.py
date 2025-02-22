@@ -15,7 +15,7 @@ plants_collection = db["plants"]
 
 
 #Setting up the API URL to ESP SERVER AND THRESHOLD MOISTURE UPDATE
-ESP_SERVER_URL = "http://10.0.0.4:5001/sensor_data"
+ESP_SERVER_URL = "http://192.168.0.18:5001/sensor_data"
 UPDATE_THRESHOLD_MOISTURE_URL = "http://192.168.0.18:5001/update_moisture"
 
 #Loads JSON data from the json file as file
@@ -57,7 +57,7 @@ def compare_plant():
         if not plant_name:
             return jsonify({"error":"Plant name is required"}),400
         # getting plant details
-        plant = plants_collection.finde_one({"name":{"$regex":f"^{plant_name}$","$options":"i"}})
+        plant = plants_collection.find_one({"name":{"$regex":f"^{plant_name}$","$options":"i"}})
         if not plant:
             #this print statement is for Debugging
             print(f"ERROR: plant '{plant_name}' not found in MongoDB!")
@@ -133,7 +133,6 @@ def compare_plant():
                 "light_intensity": light_intensity
             },
             "suggestions": suggestions,
-            "data_source": data_source,
             "pump_status": pump_status
         }),200
     except Exception as e:
@@ -142,4 +141,4 @@ def compare_plant():
         return jsonify({"error":str(e)}),500
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5001,debug=True)
