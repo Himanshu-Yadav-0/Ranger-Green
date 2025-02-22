@@ -28,5 +28,13 @@ def add_plant_data():
         plants_collection.insert_many(plants_data)
         print("Plant Dataset Added in the Databse")
 
+#Creating Routes
+#Home Route
+@app.route('/')
+def home():
+    return "Backend Server is Running!!",200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
