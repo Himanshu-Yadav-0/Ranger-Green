@@ -3,79 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Monitor</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Plant Monitor Setup</title>
+    <link rel="stylesheet" href="ip_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="card">
-            <h1>🌱 Plant Monitor</h1>
-            <div class="input-group">
-                <input type="text" id="plantName" placeholder="Enter plant name...">
-                <button id="submitBtn">Check Plant</button>
-            </div>
-            
-            <div id="loadingIndicator" class="loading-indicator hidden">
-                <div class="spinner"></div>
-                <p>Analyzing plant data...</p>
-            </div>
-
-            <div id="resultCard">
-                <div class="data-section">
-                    <h2>📊 Current Readings (Real-Time)</h2>
-                    <div class="sensor-grid">
-                        <div class="sensor-item">
-                            <span class="label">Moisture</span>
-                            <span id="currentMoisture" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Temperature</span>
-                            <span id="currentTemp" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Humidity</span>
-                            <span id="currentHumidity" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Light</span>
-                            <span id="currentLight" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Pump status</span>
-                            <span id="currentpumpstatus" class="value">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="recommendedSection" class="data-section hidden">
-                    <h2>🌡 Recommended Levels</h2>
-                    <div class="sensor-grid recommended">
-                        <div class="sensor-item">
-                            <span class="label">Moisture</span>
-                            <span id="recommendedMoisture" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Temperature</span>
-                            <span id="recommendedTemperature" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Humidity</span>
-                            <span id="recommendedHumidity" class="value">--</span>
-                        </div>
-                        <div class="sensor-item">
-                            <span class="label">Light</span>
-                            <span id="recommendedLight" class="value">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="suggestionSection" class="data-section hidden">
-                    <h2>🌿 Care Suggestion</h2>
-                    <p id="careSuggestion" class="suggestion">--</p>
-                </div>
-            </div>
+        <h1>Plant Monitor Setup</h1>
+        <div class="input-group">
+            <input type="text" id="espIpInput" placeholder="Enter IP:Port (e.g., 192.168.0.10:5001)">
+            <button id="saveIpBtn">Connect to Server</button>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        async function testConnection(espIp) {
+            try {
+                // First, send the IP to the backend server
+                const backendResponse = await fetch('http://localhost:5000/set-esp-ip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ esp_ip: espIp })
+                });
+
+                if (!backendResponse.ok) {
+                    throw new Error('Failed to configure backend server');
+                }
+
+                // Now test the ESP connection through the backend
+                const testResponse = await fetch('http://localhost:5000/fetch_sensor_data');
+                return testResponse.ok;
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                return false;
+            }
+        }
+
+        document.getElementById('saveIpBtn').addEventListener('click', async function () {
+            const espIp = document.getElementById('espIpInput').value.trim();
+            
+            // Basic IP:Port validation
+            const ipPortRegex = /^(\d{1,3}\.){3}\d{1,3}:\d{1,5}$/;
+            
+            if (ipPortRegex.test(espIp)) {
+                // Test connection before proceeding
+                const isConnected = await testConnection(espIp);
+                
+                if (isConnected) {
+                    localStorage.setItem('espServerIP', espIp);
+                    window.location.href = 'plantMonitor.html';
+                } else {
+                    alert("Could not connect to ESP server. Please check the IP and try again.");
+                }
+            } else {
+                alert("Please enter a valid IP address and port (e.g., 192.168.0.10:5001)");
+            }
+        });
+
+        // Also allow Enter key to submit
+        document.getElementById('espIpInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('saveIpBtn').click();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -19,38 +19,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedPlant = ""; // Store selected plant name
     
+    function getBackendUrl() {
+        return 'http://localhost:5000'; // Your backend server address
+    }
 
     // ✅ Fetch only sensor data
     async function fetchSensorData() {
         try {
-            const response = await fetch('http://192.168.0.8:5001/fetch_sensor_data');
+            const response = await fetch(`${getBackendUrl()}/fetch_sensor_data`);
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
 
             currentMoisture.textContent = (data.soil_moisture !== undefined && data.soil_moisture !== null) ? `${data.soil_moisture}%` : "0%";
-currentTemp.textContent = (data.temperature !== undefined && data.temperature !== null) ? `${data.temperature}°C` : "0°C";
-currentHumidity.textContent = (data.humidity !== undefined && data.humidity !== null) ? `${data.humidity}%` : "0%";
-currentLight.textContent = (data.light_intensity !== undefined && data.light_intensity !== null) ? `${data.light_intensity} lux` : "0 lux";
-currentpumpstatus.textContent = (data.pump_status !== undefined && data.pump_status !== null) ? `${data.pump_status}` : "OFF";
+            currentTemp.textContent = (data.temperature !== undefined && data.temperature !== null) ? `${data.temperature}°C` : "0°C";
+            currentHumidity.textContent = (data.humidity !== undefined && data.humidity !== null) ? `${data.humidity}%` : "0%";
+            currentLight.textContent = (data.light_intensity !== undefined && data.light_intensity !== null) ? `${data.light_intensity} lux` : "0 lux";
+            currentpumpstatus.textContent = (data.pump_status !== undefined && data.pump_status !== null) ? `${data.pump_status}` : "OFF";
 
-
-            console.log("Updated Sensor Data:", data);
-
-            // ✅ Only update care suggestions if a plant is selected
             if (selectedPlant) {
-                fetchPlantData();  // Fetch updated care suggestions
+                fetchPlantData();
             }
         } catch (error) {
             console.error('Error fetching sensor data:', error);
         }
     }
 
-    // ✅ Fetch plant data & care suggestions when user selects a plant
+    // ✅ Fetch plant data & care suggestions
     async function fetchPlantData() {
         if (!selectedPlant) return;
 
         try {
-            const response = await fetch('http://192.168.0.8:5001/compare_plant', {
+            const response = await fetch(`${getBackendUrl()}/compare_plant`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: selectedPlant })
@@ -74,6 +73,12 @@ currentpumpstatus.textContent = (data.pump_status !== undefined && data.pump_sta
         } catch (error) {
             console.error('Error fetching plant data:', error);
         }
+    }
+
+    // Check if ESP IP is configured
+    const espIp = localStorage.getItem('espServerIP');
+    if (!espIp) {
+        window.location.href = 'index.html';
     }
 
     // ✅ Start real-time sensor data updates

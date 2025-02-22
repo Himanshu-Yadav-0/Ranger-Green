@@ -27,10 +27,15 @@ body {
     border: 1px solid rgba(104, 164, 109, 0.1);
 }
 
-h1 {
-    color: #2c5834;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
-    text-align: center;
+}
+
+.header h1 {
+    margin-bottom: 0;
 }
 
 h2 {
@@ -60,9 +65,10 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
 }
 
+/* Primary button style */
 button {
     padding: 12px 24px;
-    background-color: #4CAF50;
+    background-color: #558b2f;
     color: white;
     border: none;
     border-radius: 8px;
@@ -74,6 +80,25 @@ button {
 button:hover {
     background-color: #43A047;
     transform: translateY(-1px);
+}
+
+/* Secondary button style */
+.secondary-button {
+    background-color: #558b2f;
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(85, 139, 47, 0.2);
+}
+
+.secondary-button:hover {
+    background-color: #33691e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(85, 139, 47, 0.3);
 }
 
 .loading-indicator {

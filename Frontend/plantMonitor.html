@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🌱 Plant Monitor</h1>
+                <button id="changeServerBtn" class="secondary-button">Connect to Different ESP Server</button>
+            </div>
+            <div class="input-group">
+                <input type="text" id="plantName" placeholder="Enter plant name...">
+                <button id="submitBtn">Check Plant</button>
+            </div>
+            
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
+                <p>Analyzing plant data...</p>
+            </div>
+
+            <div id="resultCard">
+                <div class="data-section">
+                    <h2>📊 Current Readings (Real-Time)</h2>
+                    <div class="sensor-grid">
+                        <div class="sensor-item">
+                            <span class="label">Moisture</span>
+                            <span id="currentMoisture" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Temperature</span>
+                            <span id="currentTemp" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Humidity</span>
+                            <span id="currentHumidity" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Light</span>
+                            <span id="currentLight" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Pump status</span>
+                            <span id="currentpumpstatus" class="value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recommendedSection" class="data-section hidden">
+                    <h2>🌡 Recommended Levels</h2>
+                    <div class="sensor-grid recommended">
+                        <div class="sensor-item">
+                            <span class="label">Moisture</span>
+                            <span id="recommendedMoisture" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Temperature</span>
+                            <span id="recommendedTemperature" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Humidity</span>
+                            <span id="recommendedHumidity" class="value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span class="label">Light</span>
+                            <span id="recommendedLight" class="value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="suggestionSection" class="data-section hidden">
+                    <h2>🌿 Care Suggestion</h2>
+                    <p id="careSuggestion" class="suggestion">--</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js">
+        // Check if ESP IP exists; if not, redirect to ip_input.html
+    if (!localStorage.getItem('espServerIP')) {
+        window.location.href = 'ip_input.html';
+    }
+    </script>
+    <script>
+        document.getElementById('changeServerBtn').addEventListener('click', async function() {
+            try {
+                // Clear the stored ESP IP
+                localStorage.removeItem('espServerIP');
+                
+                // Notify backend to clear the ESP IP
+                await fetch('http://localhost:5000/clear-esp-ip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Redirect to the IP setup page
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error:', error);
+                // Redirect anyway even if backend call fails
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
