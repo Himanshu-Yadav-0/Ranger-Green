@@ -49,7 +49,11 @@ def fetch_sensor_data():
     try:
         sensor_response = requests.get(f"http://{ESP_IP}/sensor_data", timeout=2)
         if sensor_response.status_code == 200:
-            return sensor_response.json(), 200
+            sensor_data = sensor_response.json()
+            # Add battery percentage to response if not present
+            if 'battery_percentage' not in sensor_data:
+                sensor_data['battery_percentage'] = 0  # Default value if ESP doesn't send it
+            return sensor_data, 200
         else:
             return jsonify({"error": "Failed to fetch sensor data"}), 500
     except Exception as e:

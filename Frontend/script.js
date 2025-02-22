@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentHumidity.textContent = (data.humidity !== undefined && data.humidity !== null) ? `${data.humidity}%` : "0%";
             currentLight.textContent = (data.light_intensity !== undefined && data.light_intensity !== null) ? `${data.light_intensity} lux` : "0 lux";
             currentpumpstatus.textContent = (data.pump_status !== undefined && data.pump_status !== null) ? `${data.pump_status}` : "OFF";
+            // Add battery percentage display
+            const currentBattery = document.getElementById('currentBattery');
+            currentBattery.textContent = (data.battery_percentage !== undefined && data.battery_percentage !== null) ? `${data.battery_percentage}%` : "0%";
 
             if (selectedPlant) {
                 fetchPlantData();
