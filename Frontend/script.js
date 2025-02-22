@@ -44,5 +44,60 @@ document.addEventListener('DOMContentLoaded',()=>{
             console.log("Error fetching sensor data:",error)
         }
     }
-    
+    // sending post req to the backend server to get the ideal data of the plant name in response and then show it on ui
+    async function fetchPlantData() {
+        if(!selectedPlant)return
+
+        try{
+            const response = await fetch('http://192.168.0.52:5002/compare_plant',{
+                method: 'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({name:selectedPlant})
+            })
+            if(!response.ok) throw new Error('Network response was not ok')
+            const data = await response.json()
+            
+            //showing the recommended section and care section
+            recommendedSection.classList.remove('hidden');
+            suggestionSection.classList.remove('hidden');
+
+            //adding data to the recommended sections
+            recommendedMoisture.textContent = data.plant?.ideal_moisture ? `${data.plant.ideal_moisture}%` : "No Data";
+            recommendedHumidity.textContent = data.plant?.ideal_humidity ? `${data.plant.ideal_humidity}%` : "No Data";
+            recommendedLight.textContent = data.plant?.ideal_light ? `${data.plant.ideal_light} lux` : "No Data";
+            recommendedTemperature.textContent = data.plant?.ideal_temperature ? `${data.plant.ideal_temperature}°C` : "No Data";
+
+            //updating care suggestions
+            careSuggestion.textContent=data.suggestions?.length ? data.suggestions.join(","):"No suggestion available"
+        }
+        catch(error){
+            console.log("Error fetching plant data:",error);
+            
+        }
+
+        //start real time sensor data updates
+        fetchSensorData();
+        setInterval(fetchSensorData,2000)
+
+        //user input handel
+        submitBtn.addEventListener('click',()=>{
+            selectedPlant= plantNameInput.value.trim()
+
+            if(!selectedPlant){
+                alert('please enter a plant name')
+                return
+            }
+        plantNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+
+            //loading indicator
+            loadingIndicator.classList.remove('hidden');
+            fetchPlantData().then(() => {
+                loadingIndicator.classList.add('hidden');
+            });
+        })
+    }
 })
