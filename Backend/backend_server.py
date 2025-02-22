@@ -15,7 +15,7 @@ plants_collection = db["plants"]
 
 
 #Setting up the API URL to ESP SERVER AND THRESHOLD MOISTURE UPDATE
-ESP_SERVER_URL = "http://192.168.0.18.5001/sensor_data"
+ESP_SERVER_URL = "http://10.0.0.4:5001/sensor_data"
 UPDATE_THRESHOLD_MOISTURE_URL = "http://192.168.0.18:5001/update_moisture"
 
 #Loads JSON data from the json file as file
@@ -35,7 +35,7 @@ def home():
     return "Backend Server is Running!!",200
 
 #Fetch sensor data from ESP server 
-@app.rout('/fetch_sensor_data',methods=['GET'])
+@app.route('/fetch_sensor_data',methods=['GET'])
 def fetch_sensor_data():
     try:
         sensor_response = requests.get(ESP_SERVER_URL,timeout=2)
