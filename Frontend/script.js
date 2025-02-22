@@ -1,5 +1,6 @@
 //DOMContentLoaded make it work as soon as the DOM is loaded
 document.addEventListener('DOMContentLoaded',()=>{
+    alert("HIIII")
     const plantNameInput = document.getElementById('plantName');
     const submitBtn = document.getElementById('submitBtn');
     const loadingIndicator = document.getElementById('loadingIndicator');
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         //start real time sensor data updates
         fetchSensorData();
         setInterval(fetchSensorData,2000)
+    }
 
         //user input handel
         submitBtn.addEventListener('click',()=>{
@@ -87,17 +89,18 @@ document.addEventListener('DOMContentLoaded',()=>{
                 alert('please enter a plant name')
                 return
             }
-        plantNameInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    submitBtn.click();
-                }
-            });
-
             //loading indicator
             loadingIndicator.classList.remove('hidden');
             fetchPlantData().then(() => {
                 loadingIndicator.classList.add('hidden');
             });
         })
-    }
+
+        plantNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+
+        
 })
