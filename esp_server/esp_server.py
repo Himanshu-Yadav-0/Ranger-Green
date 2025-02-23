@@ -33,7 +33,7 @@ def receive_sensor_data():
         latest_sensor_data = data
 
         # Extract soil moisture and update pump status
-        soil_moisture = latest_sensor_data.get("soil_moisture")
+        soil_moisture = float(latest_sensor_data.get("soil_moisture", 0))
 
         # update pump staus based on moisture level
         if soil_moisture is not None:
