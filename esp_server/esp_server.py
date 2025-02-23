@@ -24,20 +24,36 @@ def get_moisture_threshold():
 
 # API to Receive Sensor Data From Esp
 
-@app.route("/sensor_data" , methods=['POST'])
+@app.route("/sensor_data", methods=['POST'])
 def receive_sensor_data():
-    global latest_sensor_data , pump_status
+    global latest_sensor_data, pump_status
     try:
-        latest_sensor_data = request.json
-        soil_moisture = latest_sensor_data.get("soil_moisture")
+        data = request.get_json()  # Explicitly parse JSON
+        if not data:
+            print("Error: Received empty JSON data")
+            return jsonify({"error": "Empty JSON data"}), 400
 
-        # update pump staus based on moisture level
+        print("Received Sensor Data:", data)  # Debugging
+
+        # Store the received sensor data
+        latest_sensor_data = data
+
+        # Extract soil moisture and update pump status
+        soil_moisture = latest_sensor_data.get("soil_moisture")
         if soil_moisture is not None:
-            pump_status = "ON" if soil_moisture < moisture_threshold else "OFF"
-        print("Recived Sensor Data:", latest_sensor_data)
-        return jsonify({"message" : "Sensor data received" , "pump_status":pump_status}),200
+            try:
+                soil_moisture = float(soil_moisture)  # Convert to float
+                pump_status = "ON" if soil_moisture < moisture_threshold else "OFF"
+            except ValueError:
+                print("Error: Soil moisture is not a valid number")
+                return jsonify({"error": "Invalid soil moisture value"}), 400
+
+        return jsonify({"message": "Sensor data received", "pump_status": pump_status}), 200
+
     except Exception as e:
-        return jsonify({"error": str(e)}) , 500
+        print(f"Exception in /sensor_data: {str(e)}")
+        return jsonify({"error": str(e)}), 500  # ✅ Corrected format
+
     
     # API TO GET LATEST SENSOR DATA
 @app.route('/sensor_data',methods=['GET'])
