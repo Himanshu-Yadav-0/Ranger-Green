@@ -47,7 +47,7 @@ def fetch_sensor_data():
         return jsonify({"error": "ESP IP not configured"}), 400
     
     try:
-        sensor_response = requests.get(f"http://{ESP_IP}/sensor_data", timeout=2)
+        sensor_response = requests.get(f"http://{ESP_IP}/sensor_data", timeout=1)
         if sensor_response.status_code == 200:
             sensor_data = sensor_response.json()
             # Add battery percentage to response if not present
@@ -64,7 +64,7 @@ def compare_plant():
     global ESP_IP
     if not ESP_IP:
         return jsonify({"error": "ESP IP not configured"}), 400
-        
+      
     try:
         data = request.json
         plant_name = data.get("name", "").lower()
@@ -79,7 +79,7 @@ def compare_plant():
         plant["_id"] = str(plant["_id"])
 
         try:
-            sensor_response = requests.get(f"http://{ESP_IP}/sensor_data", timeout=2)
+            sensor_response = requests.get(f"http://{ESP_IP}/sensor_data", timeout=1)
             if sensor_response.status_code == 200:
                 sensor_data = sensor_response.json()
             else:
@@ -88,11 +88,19 @@ def compare_plant():
             print(f"Sensor Fetch error: {e}")
             
         #getting Attribuites values
-        soil_moisture = sensor_data.get("soil_moisture")
-        temperature = sensor_data.get("temperature")
-        humidity = sensor_data.get("humidity")
-        light_intensity=sensor_data.get("light_intensity")
+        # Convert sensor data to proper numeric types
+        try:
+            soil_moisture = float(sensor_data.get("soil_moisture", 0))
+            temperature = float(sensor_data.get("temperature", 0))
+            humidity = float(sensor_data.get("humidity", 0))  # If humidity should be int, convert later
+            light_intensity = float(sensor_data.get("light_intensity", 0))
+        except ValueError as e:
+            print(f"Error converting sensor data: {e}")
+            return jsonify({"error": "Invalid sensor data format"}), 400
 
+# If humidity and light intensity should be integers
+        humidity = int(humidity)
+        light_intensity = int(light_intensity)
         # if the attribuites values are None then
         if soil_moisture is None:
             soil_moisture=0.0

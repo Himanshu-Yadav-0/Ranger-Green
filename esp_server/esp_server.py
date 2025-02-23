@@ -16,27 +16,35 @@ def home():
 def get_moisture_threshold():
     return jsonify({"moisture_threshold": moisture_threshold}), 200
 
-@app.route("/sensor_data", methods=['POST'])
+# API to Receive Sensor Data From Esp
+
+@app.route("/sensor_data" , methods=['POST'])
 def receive_sensor_data():
-    global latest_sensor_data, pump_status, moisture_threshold
+    global latest_sensor_data , pump_status
     try:
-        latest_sensor_data = request.json
+        data = request.get_json()  # Explicitly parse JSON
+        if not data:
+            print("Error: Received empty JSON data")
+            return jsonify({"error": "Empty JSON data"}), 400
+
+        print("Received Sensor Data:", data)  # Debugging
+
+        # Store the received sensor data
+        latest_sensor_data = data
+
+        # Extract soil moisture and update pump status
         soil_moisture = latest_sensor_data.get("soil_moisture")
 
+        # update pump staus based on moisture level
         if soil_moisture is not None:
-            lower_threshold = moisture_threshold - (moisture_threshold * 0.20)  # 20% below threshold
-
-            if soil_moisture < lower_threshold:
-                pump_status = "ON"
-            elif soil_moisture >= moisture_threshold:
-                pump_status = "OFF"
-
-        print("Received Sensor Data:", latest_sensor_data)
-        return jsonify({"message": "Sensor data received", "pump_status": pump_status}), 200
+            pump_status = "ON" if soil_moisture < moisture_threshold else "OFF"
+        print("Recived Sensor Data:", latest_sensor_data)
+        return jsonify({"message" : "Sensor data received" , "pump_status":pump_status}),200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/sensor_data', methods=['GET'])
+        return jsonify({"error": str(e)}) , 500
+    
+    # API TO GET LATEST SENSOR DATA
+@app.route('/sensor_data',methods=['GET'])
 def get_sensor_data():
     return jsonify(latest_sensor_data or {
         "soil_moisture": None, "temperature": None,
