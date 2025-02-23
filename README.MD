@@ -63,7 +63,15 @@ cd Ranger-Green
 - Connect to the Flask backend by Entering the IP of your ESP server, fetch real-time sensor data.
 
 ## 📊 Data Flow
-1. **ESP8266 collects sensor data** → 2. **Sends data to ESP Server (via MQTT/HTTP)** → 3. **ESP Server serves the Real time sensor data to BACKEND Server** → 4. **BACKEND Server Load data into MongoDB and Processes the data and sends it to Frontend**→ 5. **Web Dashboard displays data in real-time**.
+1️⃣ ESP8266 collects sensor data
+⬇️
+2️⃣ Sends data to ESP Server (via MQTT/HTTP)
+⬇️
+3️⃣ ESP Server serves the real-time sensor data to the Backend Server
+⬇️
+4️⃣ Backend Server loads data into MongoDB, processes it, and sends it to the Frontend
+⬇️
+5️⃣ Web Dashboard displays data in real-time
 
 ## 🤝 Contributing
 ### Team Contributions
