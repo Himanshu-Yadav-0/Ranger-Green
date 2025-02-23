@@ -64,13 +64,13 @@ cd Ranger-Green
 
 ## 📊 Data Flow
 1️⃣ ESP8266 collects sensor data
-⬇️
+
 2️⃣ Sends data to ESP Server (via MQTT/HTTP)
-⬇️
+
 3️⃣ ESP Server serves the real-time sensor data to the Backend Server
-⬇️
+
 4️⃣ Backend Server loads data into MongoDB, processes it, and sends it to the Frontend
-⬇️
+
 5️⃣ Web Dashboard displays data in real-time
 
 ## 🤝 Contributing
